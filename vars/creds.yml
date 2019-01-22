@@ -1,0 +1,6 @@
+---
+avi_credentials:
+  controller: 172.16.1.18
+  username: admin
+  password: Avi_2019
+  api_version: 18.1.3

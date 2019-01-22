@@ -1,0 +1,6 @@
+---
+avi_cluster:
+  name: avi-cluster
+  ip:
+    - 172.16.1.19
+    - 172.16.1.20

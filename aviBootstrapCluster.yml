@@ -1,0 +1,59 @@
+---
+- hosts: localhost
+  connection: local
+
+  vars_files:
+    - "vars/creds.yml"
+    - "vars/params.yml"
+
+  roles:
+    - role: "avinetworks.avisdk"
+
+  tasks:
+
+  - name: Update user password
+    avi_useraccount:
+      controller: "{{ avi_credentials.controller }}"
+      username: "{{ avi_credentials.username }}"
+      password: "{{ avi_credentials.password }}"
+      old_password: 58NFaGDJm(PJH0G
+      api_version: "{{ avi_credentials.api_version }}"
+    ignore_errors: yes
+
+  - name: Get main Cluster Information
+    avi_api_session:
+      controller: "{{ avi_credentials.controller }}"
+      username: "{{ avi_credentials.username }}"
+      password: "{{ avi_credentials.password }}"
+      api_version: "{{ avi_credentials.api_version }}"
+      http_method: get
+      path: cluster
+    register: cluster_info
+
+  - name: Configure Cluster object
+    avi_cluster:
+      controller: "{{ avi_credentials.controller }}"
+      username: "{{ avi_credentials.username }}"
+      password: "{{ avi_credentials.password }}"
+      api_version: "{{ avi_credentials.api_version }}"
+      nodes:
+          -
+            name: "{{ avi_credentials.controller }}"
+            ip:
+              type: V4
+              addr: "{{ avi_credentials.controller }}"
+          -
+            name: "{{ avi_cluster.ip.0 }}"
+            ip:
+              type: V4
+              addr: "{{ avi_cluster.ip.0 }}"
+          -
+            name: "{{ avi_cluster.ip.1 }}"
+            ip:
+              type: V4
+              addr: "{{ avi_cluster.ip.1 }}"
+      name: "{{ avi_cluster.name }}"
+      uuid: "{{ cluster_info['obj'].uuid }}"
+      # virtual_ip:
+      #     addr: "{{ cluster_vip }}"
+      #     type: V4
